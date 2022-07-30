@@ -3015,11 +3015,11 @@ local Movement = gui:create("Container", {
             Round = 1,
             Hint = "The amount of speed you'd like to give your character.",
             Callback = function(value)
-                while true do
-                    if not _WalkSpeed.Options.Enabled then return end
-                    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-                    wait(0.25)
-                end
+                --while true do
+                --    if not _WalkSpeed.Options.Enabled then return end
+                --    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+                --    wait(0.25)
+                --end
             end
         })
 
