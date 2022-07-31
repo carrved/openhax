@@ -2436,25 +2436,55 @@ end)()
 
 -- ADD NEW MODULES HERE
 
-local _WalkSpeed = (function()
-    local Humanoid = game:GetService("Players").LocalPlayer.Character.Humanoid
+local _Spin = (function()
+	local module = {}
+	module.Options = {
+		Enabled = false,
+		Power = 0,
+	}
 
-    local module = {}
-    module.Options = {
-        Enabled = false,
-        Speed = 16
-    }
+	module.Toggle = function(enabled)
+		module.Options.Enabled = enabled
+		spin()
+		if enabled == false then
+			module.Options.Power = 0
+		end
+	end	
 
-    module.Toggle = function(enabled)
-        module.Options.Enabled = enabled
-    end
+	function re()
+		local char = game:GetService("Players").LocalPlayer.Character
+		local cframe = char.PrimaryPart.CFrame
 
-    while true do
-        if not module.Options.Enabled then break end
-        Humanoid.WalkSpeed = module.Options.Speed
-    end
+		char.Head.Parent = workspace
+		wait(5)
+		char.PrimaryPart.CFrame = cframe
+	end
 
-    return module
+	function spin()
+		-- Made by JackMcJagger15
+
+		power = module.Options.Power -- change this to make it more or less powerful
+
+		game:GetService('RunService').Stepped:connect(function()
+		game.Players.LocalPlayer.Character.Head.CanCollide = false
+		game.Players.LocalPlayer.Character.Torso.CanCollide = false
+		game.Players.LocalPlayer.Character["Left Leg"].CanCollide = false
+		game.Players.LocalPlayer.Character["Right Leg"].CanCollide = false
+		end)
+
+		wait(.1)
+		local thrust = Instance.new("BodyThrust")
+		thrust.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+		thrust.Force = Vector3.new(power,0,power)
+		if power == 0 then
+			re()
+			return 
+		end
+		thrust.Location = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+
+	end
+
+	return module
 end)()
 
 --// Variables
@@ -2969,6 +2999,28 @@ local Combat = gui:create("Container", {
 local Movement = gui:create("Container", {
 	Name = "Movement",
 })--|
+	local Speed = Movement.self:create("Number", {
+		Name = "WalkSpeed",
+		Default = 16,
+		Min = 16,
+		Max = 500,
+		Round = 1,
+		Hint = "Changes the WalkSpeed of the player",
+		Callback = function(value)
+			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+		end,
+	})
+	local JumpPower = Movement.self:create("Number", {
+		Name = "JumpPower",
+		Default = 50,
+		Min = 50,
+		Max = 300,
+		Round = 1,
+		Hint = "Changes the JumpPower of the player",
+		Callback = function(value)
+			game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+		end,
+	})
 	local Flight = Movement.self:create("Toggle", {
 		Name = "Flight",
 		Default = false,
@@ -2999,29 +3051,6 @@ local Movement = gui:create("Container", {
 				_Flight.Options.Smoothness = value
 			end,
 		})
-    local Speed = Movement.self:create("Toggle", {
-        Name = "WalkSpeed",
-        Default = false,
-        Hint = "Changes the WalkSpeed of the player",
-        Callback = function(enabled)
-            _WalkSpeed.Toggle(enabled)
-        end
-    })--//
-        local WalkSpeed = Speed.self:create("Number", {
-            Name = "Speed",
-            Default = 16,
-            Min = 16,
-            Max = 500,
-            Round = 1,
-            Hint = "The amount of speed you'd like to give your character.",
-            Callback = function(value)
-                --while true do
-                --    if not _WalkSpeed.Options.Enabled then return end
-                --    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-                --    wait(0.25)
-                --end
-            end
-        })
 
 --// Player
 local PlayerTab = gui:create("Container", {
@@ -3096,6 +3125,32 @@ local PlayerTab = gui:create("Container", {
 		Callback = function(enabled)
 			_Noclip.Toggle(enabled)
 		end,
+	})
+	local Spin = PlayerTab.self:create("Toggle", {
+		Name = "Spin",
+		Default = false,
+		Hint = "Spins the character",
+		Callback = function(enabled)
+			_Spin.Toggle(enabled)
+		end,
+	})--//
+		local SpinSpeed = Spin.self:create("Number", {
+			Name = "Power",
+			Default = 0,
+			Min = 0,
+			Max = 500,
+			Round = 1,
+			Hint = "Changes how fast you spin",
+			Callback = function(value)
+				_Spin.Options.Power = value
+			end,
+		})
+	local Test = PlayerTab.self:create("Button", {
+		Name = "Test",
+		Hint = "Test",
+		Callback = function()
+			print("Test")
+		end
 	})
 
 --// UI Functionality
